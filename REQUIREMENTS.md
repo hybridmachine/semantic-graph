@@ -455,8 +455,8 @@ semantic-graph/
 - Under 5% LLM API failure rate after retries
 
 ### User Experience
-- Project setup in <5 minutes
-- First graph generated in <10 minutes for typical project
+- Project setup in under 5 minutes
+- First graph generated in under 10 minutes for typical project
 - CLI intuitive enough for non-developers
 - Clear progress feedback during long operations
 

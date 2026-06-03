@@ -98,10 +98,10 @@ A tool to create, manage, and query semantic graphs from user-defined data folde
 ## 3. Non-Functional Requirements
 
 ### 3.1 Performance
-- **NFR-01**: Graph queries return results in <500ms for graphs up to 100K nodes
+- **NFR-01**: Graph queries return results in under 500ms for graphs up to 100K nodes
 - **NFR-02**: Incremental updates process only changed files
 - **NFR-03**: Support concurrent requests (async server architecture)
-- **NFR-04**: Efficient storage: <1KB average per node in database
+- **NFR-04**: Efficient storage: under 1KB average per node in database
 
 ### 3.2 Scalability
 - **NFR-05**: Architecture supports migration to PostgreSQL/Neo4j for larger graphs

@@ -274,7 +274,7 @@ semantic-graph/
     "abstraction_level": "high|mid|fine",
     "source_file": "string (relative path)",
     "content_snippet": "text",
-    "metadata": "jsonb",
+    "metadata": "json (stored as TEXT/JSON in SQLite)",
     "created_at": "datetime",
     "updated_at": "datetime"
 }
@@ -289,7 +289,7 @@ semantic-graph/
     "target_node_id": "uuid (foreign key)",
     "relationship_type": "string",
     "confidence_score": "float (0-1)",
-    "metadata": "jsonb",
+    "metadata": "json (stored as TEXT/JSON in SQLite)",
     "created_at": "datetime"
 }
 ```
@@ -304,7 +304,7 @@ semantic-graph/
     "progress": "integer (0-100)",
     "files_processed": "integer",
     "files_total": "integer",
-    "errors": "jsonb (list of error objects)",
+    "errors": "json (stored as TEXT/JSON in SQLite; list of error objects)",
     "started_at": "datetime",
     "completed_at": "datetime"
 }
@@ -401,7 +401,7 @@ semantic-graph/
 - Production-ready with uvicorn/gunicorn
 
 ### 6.2 Why SQLite + graph-tool?
-- **SQLite**: Zero-config, portable, sufficient for medium graphs (<1M nodes), easy migration to PostgreSQL
+- **SQLite**: Zero-config, portable, sufficient for medium graphs (under 1M nodes), easy migration to PostgreSQL
 - **graph-tool**: Extremely fast graph algorithms (C++ backend), better than NetworkX for large graphs
 - **Hybrid approach**: SQLite for persistence/querying, graph-tool loaded in-memory for complex operations
 
@@ -493,5 +493,5 @@ semantic-graph/
 ---
 
 *Document Version: 1.0*  
-*Last Updated: [Current Date]*  
+*Last Updated: 2026-06-03*  
 *Status: Draft for Review*

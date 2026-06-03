@@ -449,10 +449,10 @@ semantic-graph/
 ## 8. Success Metrics
 
 ### Technical
-- API response time <500ms for standard queries
+- API response time under 500ms for standard queries
 - Support graphs with 100K+ nodes on consumer hardware
 - 99% uptime for local server
-- <5% LLM API failure rate after retries
+- Under 5% LLM API failure rate after retries
 
 ### User Experience
 - Project setup in <5 minutes

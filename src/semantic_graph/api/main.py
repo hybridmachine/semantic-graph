@@ -14,7 +14,14 @@ app.include_router(llm.router, prefix="/api/v1/llm", tags=["llm"])
 
 
 def start() -> None:
-    uvicorn.run("semantic_graph.api.main:app", host="0.0.0.0", port=8000, reload=False)
+    from semantic_graph.core.config import settings
+
+    uvicorn.run(
+        "semantic_graph.api.main:app",
+        host=settings.api_host,
+        port=settings.api_port,
+        reload=False,
+    )
 
 
 if __name__ == "__main__":

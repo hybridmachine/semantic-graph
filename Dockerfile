@@ -9,7 +9,7 @@ WORKDIR /build
 RUN pip install --no-cache-dir hatchling
 
 # Copy only dependency files first for layer caching
-COPY pyproject.toml requirements.txt ./
+COPY pyproject.toml requirements.txt README.md ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy source and install the package

@@ -1,0 +1,15 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persistent application data stored in a named volume to avoid
+      # shell-expansion issues with paths like ~/...
+      - semantic_graph_data:/root/.semantic-graph
+    environment:
+      - SEMANTIC_GRAPH_DEBUG=false
+    restart: unless-stopped
+
+volumes:
+  semantic_graph_data:

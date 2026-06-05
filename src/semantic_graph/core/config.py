@@ -1,5 +1,7 @@
 """Application configuration via pydantic-settings."""
 
+from pathlib import Path
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -13,9 +15,11 @@ class Settings(BaseSettings):
 
     app_name: str = Field(default="semantic-graph")
     debug: bool = Field(default=False)
-    api_host: str = Field(default="0.0.0.0")
+    # Defaults to loopback for local security (NFR-24); override to 0.0.0.0
+    # when running in Docker or on a LAN (e.g. via SEMANTIC_GRAPH_API_HOST).
+    api_host: str = Field(default="127.0.0.1")
     api_port: int = Field(default=8000)
-    data_dir: str = Field(default="~/.semantic-graph")
+    data_dir: Path = Field(default_factory=lambda: Path.home() / ".semantic-graph")
 
 
 settings = Settings()

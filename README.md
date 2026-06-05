@@ -76,7 +76,7 @@ Configuration files live in `configs/`. The application reads settings from envi
 | Variable | Default | Description |
 |---|---|---|
 | `SEMANTIC_GRAPH_DEBUG` | `false` | Enable debug mode |
-| `SEMANTIC_GRAPH_API_HOST` | `0.0.0.0` | Server bind host |
+| `SEMANTIC_GRAPH_API_HOST` | `127.0.0.1` | Server bind host. Defaults to loopback for local security; set to `0.0.0.0` when running in Docker or on a LAN |
 | `SEMANTIC_GRAPH_API_PORT` | `8000` | Server bind port |
 | `SEMANTIC_GRAPH_DATA_DIR` | `~/.semantic-graph` | Application data directory |
 

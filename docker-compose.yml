@@ -9,6 +9,9 @@ services:
       - semantic_graph_data:/root/.semantic-graph
     environment:
       - SEMANTIC_GRAPH_DEBUG=false
+      # Override secure loopback default so the API binds on the container
+      # interface and is reachable via the published port.
+      - SEMANTIC_GRAPH_API_HOST=0.0.0.0
     restart: unless-stopped
 
 volumes:

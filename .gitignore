@@ -1,1 +1,59 @@
-Nothing needs to be added to .gitignore since only a REQUIREMENTS.md file was added, which is a source/config file and not a build artifact, dependency, or temporary file.
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Testing & coverage
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+nosetests.xml
+
+# Type checkers
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pytype/
+
+# Linters / formatters
+.ruff_cache/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Application data
+.semantic-graph/
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# pip-tools
+requirements*.txt.bak

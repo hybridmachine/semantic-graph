@@ -1,0 +1,18 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persistent application data stored in a named volume to avoid
+      # shell-expansion issues with paths like ~/...
+      - semantic_graph_data:/root/.semantic-graph
+    environment:
+      - SEMANTIC_GRAPH_DEBUG=false
+      # Override secure loopback default so the API binds on the container
+      # interface and is reachable via the published port.
+      - SEMANTIC_GRAPH_API_HOST=0.0.0.0
+    restart: unless-stopped
+
+volumes:
+  semantic_graph_data:

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import uuid
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from semantic_graph.storage.models import FileManifestEntry
@@ -20,21 +21,14 @@ class FileManifestEntryRepository(BaseRepository[FileManifestEntry]):
         self, session: Session, project_id: uuid.UUID
     ) -> list[FileManifestEntry]:
         """Return all manifest entries for *project_id*."""
-        return list(
-            session.query(FileManifestEntry)
-            .filter(FileManifestEntry.project_id == project_id)
-            .all()
-        )
+        stmt = select(FileManifestEntry).filter_by(project_id=project_id)
+        return list(session.scalars(stmt))
 
     def get_by_path(
         self, session: Session, project_id: uuid.UUID, relative_path: str
     ) -> FileManifestEntry | None:
         """Return the manifest entry for a given path, or *None*."""
-        return (
-            session.query(FileManifestEntry)
-            .filter(
-                FileManifestEntry.project_id == project_id,
-                FileManifestEntry.relative_path == relative_path,
-            )
-            .one_or_none()
+        stmt = select(FileManifestEntry).filter_by(
+            project_id=project_id, relative_path=relative_path
         )
+        return session.scalars(stmt).one_or_none()

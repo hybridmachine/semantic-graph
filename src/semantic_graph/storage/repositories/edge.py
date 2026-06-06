@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import uuid
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from semantic_graph.storage.models import Edge
@@ -18,12 +19,15 @@ class EdgeRepository(BaseRepository[Edge]):
 
     def list_by_project(self, session: Session, project_id: uuid.UUID) -> list[Edge]:
         """Return all edges belonging to *project_id*."""
-        return list(session.query(Edge).filter(Edge.project_id == project_id).all())
+        stmt = select(Edge).filter_by(project_id=project_id)
+        return list(session.scalars(stmt))
 
     def list_by_source_node(self, session: Session, node_id: uuid.UUID) -> list[Edge]:
         """Return all edges where *node_id* is the source."""
-        return list(session.query(Edge).filter(Edge.source_node_id == node_id).all())
+        stmt = select(Edge).filter_by(source_node_id=node_id)
+        return list(session.scalars(stmt))
 
     def list_by_target_node(self, session: Session, node_id: uuid.UUID) -> list[Edge]:
         """Return all edges where *node_id* is the target."""
-        return list(session.query(Edge).filter(Edge.target_node_id == node_id).all())
+        stmt = select(Edge).filter_by(target_node_id=node_id)
+        return list(session.scalars(stmt))

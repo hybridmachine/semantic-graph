@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import uuid
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from semantic_graph.storage.models import ProcessingJob
@@ -20,8 +21,5 @@ class ProcessingJobRepository(BaseRepository[ProcessingJob]):
         self, session: Session, project_id: uuid.UUID
     ) -> list[ProcessingJob]:
         """Return all processing jobs for *project_id*."""
-        return list(
-            session.query(ProcessingJob)
-            .filter(ProcessingJob.project_id == project_id)
-            .all()
-        )
+        stmt = select(ProcessingJob).filter_by(project_id=project_id)
+        return list(session.scalars(stmt))

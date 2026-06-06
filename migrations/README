@@ -1,0 +1,41 @@
+Two-database architecture
+=========================
+
+- ``projects.db`` (shared metadata) — schema evolution managed by Alembic.
+- Per-project ``graph.db`` — managed at runtime by
+  ``GraphBase.metadata.create_all(engine)`` inside ``DatabaseManager``.
+
+Development bootstrap
+---------------------
+
+During development, ``DatabaseManager.__init__`` calls
+``ProjectsBase.metadata.create_all()`` to bootstrap ``projects.db``
+without requiring a migration run.  This is a convenience so a fresh
+checkout works immediately.
+
+Once the schema stabilises, generate and run an Alembic migration::
+
+    alembic upgrade head
+    alembic revision --autogenerate -m "describe change"
+
+In production the recommended path is to deploy via Alembic migrations
+rather than relying on ``create_all`` (which cannot detect schema drift
+or apply incremental changes).  The ``create_all`` call is idempotent
+(``CREATE TABLE IF NOT EXISTS``) and will not overwrite an existing,
+up-to-date database, so running both is harmless.
+
+Usage
+-----
+
+Default (projects.db)::
+
+    alembic upgrade head
+    alembic revision --autogenerate -m "..."
+
+Graph schema (for schema design / migration authoring)::
+
+    alembic -x db=graph revision --autogenerate -m "..."
+    alembic -x db=graph upgrade head
+
+The URL in ``alembic.ini`` is a fallback; the real URL is built
+dynamically in ``env.py`` with ``~`` expansion and directory creation.

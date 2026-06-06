@@ -1,0 +1,22 @@
+Two-database architecture
+=========================
+
+- ``projects.db`` (shared metadata) — managed by Alembic.
+- Per-project ``graph.db`` — managed at runtime by
+  ``GraphBase.metadata.create_all(engine)`` inside ``DatabaseManager``.
+
+Usage
+-----
+
+Default (projects.db)::
+
+    alembic upgrade head
+    alembic revision --autogenerate -m "..."
+
+Graph schema::
+
+    alembic -x db=graph revision --autogenerate -m "..."
+    alembic -x db=graph upgrade head
+
+The URL in ``alembic.ini`` is a fallback; the real URL is built
+dynamically in ``env.py`` with ``~`` expansion and directory creation.

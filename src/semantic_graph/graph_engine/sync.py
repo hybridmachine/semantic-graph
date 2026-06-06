@@ -29,8 +29,9 @@ class GraphSyncManager:
     cancelled, or rolled-back jobs never expose graph state that has not
     reached SQLite.
 
-    A per-project :class:`threading.Lock` ensures that only one writer
-    modifies the graph at a time (see §6.2 of REQUIREMENTS.md).
+    A per-project :class:`threading.RLock` (reentrant lock) ensures that
+    only one writer modifies the graph at a time (see §6.2 of
+    REQUIREMENTS.md).
     """
 
     def __init__(
@@ -42,7 +43,7 @@ class GraphSyncManager:
         self._committed = build_result
         self._project_id = project_id
         self._db_manager = db_manager
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
 
         # Nodes / edges that have been staged but not yet persisted to
         # SQLite or applied to the committed in-memory graph.
@@ -110,8 +111,9 @@ class GraphSyncManager:
         ----------
         node_attrs:
             Dictionary of :class:`Node` column values.  Must include
-            ``"id"``, ``"project_id"``, ``"name"``, ``"type"``, and
-            ``"abstraction_level"``.
+            ``"id"``, ``"name"``, ``"type"``, and ``"abstraction_level"``.
+            If ``"project_id"`` is supplied it is overwritten with the
+            manager's project id, matching the :meth:`add_edge` contract.
 
         Returns
         -------
@@ -122,7 +124,11 @@ class GraphSyncManager:
         """
         with self._lock:
             predicted_idx = self._committed.node_count + len(self._dirty_nodes)
-            self._dirty_nodes.append(dict(node_attrs))
+            full_attrs = dict(node_attrs)
+            full_attrs["project_id"] = self._project_id
+            if "id" not in full_attrs:
+                full_attrs["id"] = uuid.uuid4()
+            self._dirty_nodes.append(full_attrs)
             return predicted_idx
 
     def add_edge(

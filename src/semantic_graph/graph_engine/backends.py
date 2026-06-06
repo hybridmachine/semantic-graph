@@ -364,7 +364,7 @@ class GraphToolBackend(GraphBackend):
     def get_node_attrs(
         self, build_result: GraphBuildResult, idx: int
     ) -> dict[str, Any]:
-        attrs = build_result._node_attrs.get(idx, {})
+        attrs = dict(build_result._node_attrs.get(idx, {}))
         # Ensure the domain id is always present
         attrs["id"] = build_result._idx_to_node_id[idx]
         return attrs
@@ -400,7 +400,10 @@ class GraphToolBackend(GraphBackend):
         e = g.edge(g.vertex(src_idx), g.vertex(tgt_idx))
         if e is None:
             return None
-        return build_result._edge_attrs.get((src_idx, tgt_idx))
+        edge_attrs = build_result._edge_attrs.get((src_idx, tgt_idx))
+        if edge_attrs is None:
+            return None
+        return dict(edge_attrs)
 
     def node_count(self, build_result: GraphBuildResult) -> int:
         from graph_tool import Graph

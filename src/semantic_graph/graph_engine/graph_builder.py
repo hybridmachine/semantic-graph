@@ -43,11 +43,8 @@ def load_graph(
     GraphBuildResult
         The in-memory graph with bidirectional node-id↔index mappings.
 
-    Raises
-    ------
-    ValueError:
-        If the project has no nodes (empty graph).
     """
+
     if backend is None:
         backend = get_backend()
 

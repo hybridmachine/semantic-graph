@@ -120,7 +120,6 @@ def _upgrade_graph() -> None:
         sa.Column("updated_at", sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index("ix_nodes_project_id", "nodes", ["project_id"])
     op.create_table(
         "edges",
         sa.Column("project_id", sa.Uuid(), nullable=False, index=True),
@@ -161,9 +160,6 @@ def _upgrade_graph() -> None:
         ),
         sa.PrimaryKeyConstraint("id"),
     )
-    op.create_index("ix_edges_project_id", "edges", ["project_id"])
-    op.create_index("ix_edges_source_node_id", "edges", ["source_node_id"])
-    op.create_index("ix_edges_target_node_id", "edges", ["target_node_id"])
     op.create_table(
         "file_manifest",
         sa.Column("project_id", sa.Uuid(), nullable=False, index=True),

@@ -25,10 +25,21 @@ def _set_sqlite_pragma(
 
     SQLite does not enforce foreign-key constraints by default;
     this pragma must be enabled on every new connection.
+
+    The listener is registered globally, so it fires for *all* engines
+    in the process.  It only acts on SQLite connections; non-SQLite
+    backends are left untouched.
     """
+    # Only SQLite connections need this pragma.
+    driver = getattr(dbapi_connection, "__class__", None)
+    if driver is None or "sqlite" not in driver.__module__:
+        return
+
     cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON")
-    cursor.close()
+    try:
+        cursor.execute("PRAGMA foreign_keys=ON")
+    finally:
+        cursor.close()
 
 
 class DatabaseManager:

@@ -6,7 +6,7 @@ import uuid
 from datetime import UTC, datetime
 
 import pytest
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session, sessionmaker
 
 from semantic_graph.storage.models import (
@@ -16,10 +16,22 @@ from semantic_graph.storage.models import (
 )
 
 
+def _enable_fk(dbapi_connection, _connection_record):
+    """Enable SQLite foreign-key enforcement on every connection."""
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
+
+
 @pytest.fixture
 def session():
-    """In-memory SQLite session with all tables pre-created."""
+    """In-memory SQLite session with all tables pre-created.
+
+    Registers a per-engine connect listener for FK enforcement so tests
+    in this module are self-contained and not order-dependent.
+    """
     engine = create_engine("sqlite:///:memory:", echo=False)
+    event.listen(engine, "connect", _enable_fk)
     ProjectsBase.metadata.create_all(engine)
     GraphBase.metadata.create_all(engine)
     SessionLocal = sessionmaker(bind=engine)

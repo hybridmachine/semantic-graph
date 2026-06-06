@@ -106,7 +106,9 @@ class Project(UUIDMixin, TimestampMixin, ProjectsBase):
         Boolean, default=True, nullable=False
     )
     max_file_size_bytes: Mapped[int] = mapped_column(
-        Integer, default=10_485_760, nullable=False  # 10 MB
+        Integer,
+        default=10_485_760,
+        nullable=False,  # 10 MB
     )
     follow_symlinks: Mapped[bool] = mapped_column(
         Boolean, default=False, nullable=False
@@ -120,9 +122,7 @@ class Project(UUIDMixin, TimestampMixin, ProjectsBase):
     )
 
     # Lifecycle
-    status: Mapped[str] = mapped_column(
-        String(50), default="idle", nullable=False
-    )
+    status: Mapped[str] = mapped_column(String(50), default="idle", nullable=False)
 
     def __repr__(self) -> str:
         return f"<Project id={self.id!r} name={self.name!r}>"
@@ -137,9 +137,7 @@ class ProcessingJob(UUIDMixin, ProjectsBase):
         ForeignKey("projects.id"), nullable=False
     )
     type: Mapped[str] = mapped_column(String(50), nullable=False)
-    status: Mapped[str] = mapped_column(
-        String(50), default="pending", nullable=False
-    )
+    status: Mapped[str] = mapped_column(String(50), default="pending", nullable=False)
     progress: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     files_processed: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     files_total: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
@@ -174,12 +172,8 @@ class Node(UUIDMixin, TimestampMixin, GraphBase):
 
     project_id: Mapped[uuid.UUID] = mapped_column(nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(500), nullable=False)
-    type: Mapped[str] = mapped_column(
-        String(100), nullable=False
-    )
-    abstraction_level: Mapped[str] = mapped_column(
-        String(20), nullable=False
-    )
+    type: Mapped[str] = mapped_column(String(100), nullable=False)
+    abstraction_level: Mapped[str] = mapped_column(String(20), nullable=False)
     source_file: Mapped[str | None] = mapped_column(String(1024), nullable=True)
     content_snippet: Mapped[str | None] = mapped_column(Text, nullable=True)
     metadata_: Mapped[dict[str, Any]] = mapped_column(
@@ -232,9 +226,7 @@ class FileManifestEntry(UUIDMixin, GraphBase):
 
     __tablename__ = "file_manifest"
     __table_args__ = (
-        UniqueConstraint(
-            "project_id", "relative_path", name="uq_file_manifest_path"
-        ),
+        UniqueConstraint("project_id", "relative_path", name="uq_file_manifest_path"),
     )
 
     project_id: Mapped[uuid.UUID] = mapped_column(nullable=False, index=True)
@@ -244,13 +236,9 @@ class FileManifestEntry(UUIDMixin, GraphBase):
     modified_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     extractor_id: Mapped[str] = mapped_column(String(100), nullable=False)
     extractor_version: Mapped[str] = mapped_column(String(50), nullable=False)
-    status: Mapped[str] = mapped_column(
-        String(50), default="pending", nullable=False
-    )
+    status: Mapped[str] = mapped_column(String(50), default="pending", nullable=False)
     skip_reason: Mapped[str | None] = mapped_column(String(1024), nullable=True)
-    last_processed_at: Mapped[datetime | None] = mapped_column(
-        DateTime, nullable=True
-    )
+    last_processed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
     def __repr__(self) -> str:
         return (

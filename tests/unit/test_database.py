@@ -45,9 +45,7 @@ class TestDatabaseManagerInit:
         projects_db = db_manager.data_dir / "projects.db"
         assert projects_db.exists()
 
-    def test_projects_db_has_project_table(
-        self, db_manager: DatabaseManager
-    ) -> None:
+    def test_projects_db_has_project_table(self, db_manager: DatabaseManager) -> None:
         """The projects table exists in projects.db after init."""
         with db_manager.projects_session() as session:
             result = session.execute(
@@ -82,41 +80,33 @@ class TestDatabaseManagerInit:
 class TestPerProjectDatabase:
     """Tests for per-project graph.db management."""
 
-    def test_creates_project_db_on_demand(
-        self, db_manager: DatabaseManager
-    ) -> None:
+    def test_creates_project_db_on_demand(self, db_manager: DatabaseManager) -> None:
         """A per-project graph.db is created when first requested."""
         project_id = uuid.uuid4()
         _ = db_manager.get_project_engine(project_id)
         db_path = db_manager.get_project_db_path(project_id)
         assert db_path.exists()
 
-    def test_project_db_has_node_table(
-        self, db_manager: DatabaseManager
-    ) -> None:
+    def test_project_db_has_node_table(self, db_manager: DatabaseManager) -> None:
         """The nodes table exists in a per-project graph.db."""
         project_id = uuid.uuid4()
         _ = db_manager.get_project_engine(project_id)
         with db_manager.project_session(project_id) as session:
             result = session.execute(
                 text(
-                    "SELECT name FROM sqlite_master"
-                    " WHERE type='table' AND name='nodes'"
+                    "SELECT name FROM sqlite_master WHERE type='table' AND name='nodes'"
                 )
             )
             assert result.scalar() == "nodes"
 
-    def test_project_db_has_edge_table(
-        self, db_manager: DatabaseManager
-    ) -> None:
+    def test_project_db_has_edge_table(self, db_manager: DatabaseManager) -> None:
         """The edges table exists in a per-project graph.db."""
         project_id = uuid.uuid4()
         db_manager.get_project_engine(project_id)
         with db_manager.project_session(project_id) as session:
             result = session.execute(
                 text(
-                    "SELECT name FROM sqlite_master"
-                    " WHERE type='table' AND name='edges'"
+                    "SELECT name FROM sqlite_master WHERE type='table' AND name='edges'"
                 )
             )
             assert result.scalar() == "edges"
@@ -157,9 +147,7 @@ class TestPerProjectDatabase:
 class TestCRUDOperations:
     """Integration-style tests for actual CRUD across both databases."""
 
-    def test_create_and_retrieve_project(
-        self, db_manager: DatabaseManager
-    ) -> None:
+    def test_create_and_retrieve_project(self, db_manager: DatabaseManager) -> None:
         """A Project can be created in projects.db and retrieved."""
         pid = uuid.uuid4()
         with db_manager.projects_session() as session:
@@ -176,9 +164,7 @@ class TestCRUDOperations:
             assert retrieved is not None
             assert retrieved.name == "crud-test"
 
-    def test_create_node_in_project_db(
-        self, db_manager: DatabaseManager
-    ) -> None:
+    def test_create_node_in_project_db(self, db_manager: DatabaseManager) -> None:
         """A Node can be created in a per-project graph.db."""
         project_id = uuid.uuid4()
         node_id = uuid.uuid4()
@@ -201,9 +187,7 @@ class TestCRUDOperations:
             assert retrieved is not None
             assert retrieved.name == "test-node"
 
-    def test_create_job_in_projects_db(
-        self, db_manager: DatabaseManager
-    ) -> None:
+    def test_create_job_in_projects_db(self, db_manager: DatabaseManager) -> None:
         """A ProcessingJob can be created in projects.db."""
         project_id = uuid.uuid4()
         job_id = uuid.uuid4()
@@ -229,9 +213,7 @@ class TestCRUDOperations:
             assert retrieved is not None
             assert retrieved.project_id == project_id
 
-    def test_orphan_processing_job_rejected(
-        self, db_manager: DatabaseManager
-    ) -> None:
+    def test_orphan_processing_job_rejected(self, db_manager: DatabaseManager) -> None:
         """ProcessingJob referencing nonexistent project raises IntegrityError."""
         import uuid as _uuid
 
@@ -248,9 +230,7 @@ class TestCRUDOperations:
                 session.add(job)
                 # Commit inside the managed session will fail on FK
 
-    def test_orphan_edge_rejected(
-        self, db_manager: DatabaseManager
-    ) -> None:
+    def test_orphan_edge_rejected(self, db_manager: DatabaseManager) -> None:
         """Edge referencing nonexistent node raises IntegrityError."""
         import uuid as _uuid
 
@@ -324,9 +304,7 @@ class TestSessionErrorHandling:
 class TestDispose:
     """Tests for resource cleanup."""
 
-    def test_dispose_closes_all_engines(
-        self, db_manager: DatabaseManager
-    ) -> None:
+    def test_dispose_closes_all_engines(self, db_manager: DatabaseManager) -> None:
         """Dispose closes the projects engine and all project engines."""
         pid = uuid.uuid4()
         db_manager.get_project_engine(pid)

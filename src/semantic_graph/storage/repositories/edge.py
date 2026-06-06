@@ -16,32 +16,14 @@ class EdgeRepository(BaseRepository[Edge]):
     def __init__(self) -> None:
         super().__init__(Edge)
 
-    def list_by_project(
-        self, session: Session, project_id: uuid.UUID
-    ) -> list[Edge]:
+    def list_by_project(self, session: Session, project_id: uuid.UUID) -> list[Edge]:
         """Return all edges belonging to *project_id*."""
-        return list(
-            session.query(Edge)
-            .filter(Edge.project_id == project_id)
-            .all()
-        )
+        return list(session.query(Edge).filter(Edge.project_id == project_id).all())
 
-    def list_by_source_node(
-        self, session: Session, node_id: uuid.UUID
-    ) -> list[Edge]:
+    def list_by_source_node(self, session: Session, node_id: uuid.UUID) -> list[Edge]:
         """Return all edges where *node_id* is the source."""
-        return list(
-            session.query(Edge)
-            .filter(Edge.source_node_id == node_id)
-            .all()
-        )
+        return list(session.query(Edge).filter(Edge.source_node_id == node_id).all())
 
-    def list_by_target_node(
-        self, session: Session, node_id: uuid.UUID
-    ) -> list[Edge]:
+    def list_by_target_node(self, session: Session, node_id: uuid.UUID) -> list[Edge]:
         """Return all edges where *node_id* is the target."""
-        return list(
-            session.query(Edge)
-            .filter(Edge.target_node_id == node_id)
-            .all()
-        )
+        return list(session.query(Edge).filter(Edge.target_node_id == node_id).all())

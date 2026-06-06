@@ -16,6 +16,4 @@ class ProjectRepository(BaseRepository[Project]):
 
     def get_by_name(self, session: Session, name: str) -> Project | None:
         """Return the project with *name*, or *None*."""
-        return (
-            session.query(Project).filter(Project.name == name).one_or_none()
-        )
+        return session.query(Project).filter(Project.name == name).one_or_none()

@@ -18,9 +18,7 @@ from semantic_graph.storage.models import GraphBase, ProjectsBase
 
 
 @event.listens_for(Engine, "connect")
-def _set_sqlite_pragma(
-    dbapi_connection: Any, _connection_record: Any
-) -> None:
+def _set_sqlite_pragma(dbapi_connection: Any, _connection_record: Any) -> None:
     """Enable foreign-key enforcement for SQLite connections.
 
     SQLite does not enforce foreign-key constraints by default;
@@ -61,9 +59,7 @@ class DatabaseManager:
         self._projects_engine: Engine = create_engine(
             f"sqlite:///{projects_db_path}", echo=False
         )
-        self._projects_session_factory = sessionmaker(
-            bind=self._projects_engine
-        )
+        self._projects_session_factory = sessionmaker(bind=self._projects_engine)
 
         # Install tables on first creation.
         ProjectsBase.metadata.create_all(self._projects_engine)
@@ -113,15 +109,11 @@ class DatabaseManager:
             GraphBase.metadata.create_all(engine)
 
             self._project_engines[project_id] = engine
-            self._project_session_factories[project_id] = sessionmaker(
-                bind=engine
-            )
+            self._project_session_factories[project_id] = sessionmaker(bind=engine)
         return self._project_engines[project_id]
 
     @contextmanager
-    def project_session(
-        self, project_id: uuid.UUID
-    ) -> Generator[Session, None, None]:
+    def project_session(self, project_id: uuid.UUID) -> Generator[Session, None, None]:
         """Yield a transactional session for a project's ``graph.db``."""
         # Ensure the engine (and therefore the DB) exists before handing
         # out a session.

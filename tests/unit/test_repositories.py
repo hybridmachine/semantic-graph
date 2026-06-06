@@ -235,9 +235,7 @@ class TestEdgeRepository:
     """Tests for Edge-specific repository methods."""
 
     @staticmethod
-    def _create_node(
-        session: Session, project_id: uuid.UUID, name: str
-    ):
+    def _create_node(session: Session, project_id: uuid.UUID, name: str):
         """Helper to create a node for FK references."""
         from semantic_graph.storage.models import Node
 

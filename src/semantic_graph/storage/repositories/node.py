@@ -16,12 +16,6 @@ class NodeRepository(BaseRepository[Node]):
     def __init__(self) -> None:
         super().__init__(Node)
 
-    def list_by_project(
-        self, session: Session, project_id: uuid.UUID
-    ) -> list[Node]:
+    def list_by_project(self, session: Session, project_id: uuid.UUID) -> list[Node]:
         """Return all nodes belonging to *project_id*."""
-        return list(
-            session.query(Node)
-            .filter(Node.project_id == project_id)
-            .all()
-        )
+        return list(session.query(Node).filter(Node.project_id == project_id).all())

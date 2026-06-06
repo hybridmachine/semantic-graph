@@ -448,9 +448,7 @@ class TestEdgeModel:
         assert edge_low.confidence_score == 0.0
         assert edge_high.confidence_score == 1.0
 
-    def test_edge_rejects_invalid_source_node_fk(
-        self, session: Session
-    ) -> None:
+    def test_edge_rejects_invalid_source_node_fk(self, session: Session) -> None:
         """Edge with nonexistent source_node_id raises IntegrityError."""
         from sqlalchemy.exc import IntegrityError
 
@@ -595,9 +593,7 @@ class TestProcessingJobModel:
         assert len(job.errors) == 2
         assert job.errors[1]["file"] == "b.py"
 
-    def test_processing_job_rejects_invalid_project_fk(
-        self, session: Session
-    ) -> None:
+    def test_processing_job_rejects_invalid_project_fk(self, session: Session) -> None:
         """ProcessingJob with nonexistent project_id raises IntegrityError."""
         from sqlalchemy.exc import IntegrityError
 

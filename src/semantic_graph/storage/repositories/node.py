@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import uuid
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from semantic_graph.storage.models import Node
@@ -18,4 +19,5 @@ class NodeRepository(BaseRepository[Node]):
 
     def list_by_project(self, session: Session, project_id: uuid.UUID) -> list[Node]:
         """Return all nodes belonging to *project_id*."""
-        return list(session.query(Node).filter(Node.project_id == project_id).all())
+        stmt = select(Node).filter_by(project_id=project_id)
+        return list(session.scalars(stmt))

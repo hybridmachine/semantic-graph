@@ -53,12 +53,10 @@ class BaseRepository(Generic[M]):
         offset: int = 0,
     ) -> list[M]:
         """Return all entities, optionally paginated."""
-        query = session.query(self._model_class)
-        if offset:
-            query = query.offset(offset)
-        if limit is not None:
-            query = query.limit(limit)
-        return list(query.all())
+        from sqlalchemy import select
+
+        stmt = select(self._model_class).offset(offset).limit(limit)
+        return list(session.scalars(stmt))
 
     # ------------------------------------------------------------------
     # Update

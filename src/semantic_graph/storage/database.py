@@ -17,6 +17,43 @@ from sqlalchemy.orm import Session, sessionmaker
 from semantic_graph.storage.models import GraphBase, ProjectsBase
 
 
+def _stamp_if_configured(engine: Engine, db: str) -> None:
+    """Stamp *engine*'s database with the current Alembic head revision.
+
+    This prevents future ``alembic upgrade head`` runs from attempting
+    to create tables that already exist.  A missing or misconfigured
+    Alembic installation is silently ignored — stamping is a best-effort
+    convenience for development setups.
+    """
+    try:
+        from alembic import command
+        from alembic.config import Config
+    except ImportError:
+        return
+
+    # Locate the project root by walking up from this file.
+    candidate = Path(__file__).resolve().parent
+    for _ in range(6):
+        if (candidate / "alembic.ini").exists():
+            break
+        candidate = candidate.parent
+
+    alembic_ini = candidate / "alembic.ini"
+    if not alembic_ini.exists():
+        return
+
+    try:
+        cfg = Config(str(alembic_ini))
+        # Point Alembic at the engine's actual database URL.
+        cfg.set_main_option("sqlalchemy.url", str(engine.url))
+        # Select the correct target database branch.
+        cfg.cmd_opts = type("_CmdOptions", (), {"x": [f"db={db}"]})()
+        command.stamp(cfg, "head")
+    except Exception:
+        # Best-effort — failures here should not prevent startup.
+        pass
+
+
 @event.listens_for(Engine, "connect")
 def _set_sqlite_pragma(dbapi_connection: Any, _connection_record: Any) -> None:
     """Enable foreign-key enforcement for SQLite connections.
@@ -61,8 +98,10 @@ class DatabaseManager:
         )
         self._projects_session_factory = sessionmaker(bind=self._projects_engine)
 
-        # Install tables on first creation.
+        # Install tables on first creation, then stamp the database so
+        # future Alembic migrations don't try to recreate existing tables.
         ProjectsBase.metadata.create_all(self._projects_engine)
+        _stamp_if_configured(self._projects_engine, "projects")
 
         # ------------------------------------------------------------------
         # Per-project engine / session cache
@@ -107,6 +146,7 @@ class DatabaseManager:
 
             engine = create_engine(f"sqlite:///{db_path}", echo=False)
             GraphBase.metadata.create_all(engine)
+            _stamp_if_configured(engine, "graph")
 
             self._project_engines[project_id] = engine
             self._project_session_factories[project_id] = sessionmaker(bind=engine)

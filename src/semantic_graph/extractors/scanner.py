@@ -153,25 +153,7 @@ class FileScanner:
                 )
                 continue
 
-            # --- Directories: recurse (unless gitignored) -----------
-            if entry.is_dir():
-                if self.respect_gitignore and self._is_gitignored(
-                    rel, gitignore_patterns
-                ):
-                    report.skipped.append(
-                        FileScanResult(
-                            relative_path=rel,
-                            absolute_path=entry,
-                            size_bytes=0,
-                            status="skipped",
-                            skip_reason="Matches .gitignore pattern",
-                        )
-                    )
-                    continue
-                self._walk(entry, base_root, report, gitignore_patterns)
-                continue
-
-            # --- Symlinks -------------------------------------------------
+            # --- Symlinks (checked BEFORE is_dir to avoid traversal) ---
             if entry.is_symlink():
                 if not self.follow_symlinks:
                     report.skipped.append(
@@ -198,6 +180,8 @@ class FileScanner:
                             )
                         )
                         continue
+                    # Safe symlink — treat target as the effective entry.
+                    entry = target
                 except PathSecurityError as exc:
                     report.skipped.append(
                         FileScanResult(
@@ -209,6 +193,24 @@ class FileScanner:
                         )
                     )
                     continue
+
+            # --- Directories: recurse (unless gitignored) -----------
+            if entry.is_dir():
+                if self.respect_gitignore and self._is_gitignored(
+                    rel, gitignore_patterns
+                ):
+                    report.skipped.append(
+                        FileScanResult(
+                            relative_path=rel,
+                            absolute_path=entry,
+                            size_bytes=0,
+                            status="skipped",
+                            skip_reason="Matches .gitignore pattern",
+                        )
+                    )
+                    continue
+                self._walk(entry, base_root, report, gitignore_patterns)
+                continue
 
             # --- Regular file checks --------------------------------------
             if not entry.is_file():

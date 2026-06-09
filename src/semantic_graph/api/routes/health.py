@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError, version
 
 from fastapi import APIRouter
 
@@ -19,8 +19,17 @@ async def health() -> dict[str, str]:
 
 @router.get("/version", response_model=StatusResponse)
 async def api_version() -> StatusResponse:
-    """Return API version information."""
+    """Return API version information.
+
+    Falls back to ``"dev"`` when running from a source checkout
+    without an installed distribution (e.g. ``uvicorn`` without
+    ``pip install -e .``).
+    """
+    try:
+        pkg_version = version("semantic-graph")
+    except PackageNotFoundError:
+        pkg_version = "dev"
     return StatusResponse(
         status="ok",
-        message=f"semantic-graph v{version('semantic-graph')}",
+        message=f"semantic-graph v{pkg_version}",
     )

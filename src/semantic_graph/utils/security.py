@@ -109,10 +109,22 @@ def validate_project_root(root_path: Path) -> Path:
     if not canon.is_dir():
         raise PathSecurityError(f"Project root is not a directory: {canon}")
 
-    # Reject well-known system directories as a safety measure.
+    # Reject well-known system and shared directories as a safety measure.
     # Check the POSIX string so that symlinked system directories
     # (e.g. /etc → /private/etc on macOS) are still caught.
-    protected_paths = {"/", "/etc", "/sys", "/proc", "/dev"}
+    protected_paths = {
+        "/",
+        "/boot",
+        "/dev",
+        "/etc",
+        "/opt",
+        "/proc",
+        "/root",
+        "/sys",
+        "/tmp",
+        "/usr",
+        "/var",
+    }
     if canon.as_posix() in protected_paths or root_path.as_posix() in protected_paths:
         raise PathSecurityError(
             f"Project root cannot be a system directory: {canon}"

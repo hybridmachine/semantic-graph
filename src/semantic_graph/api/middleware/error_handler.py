@@ -26,22 +26,50 @@ async def semantic_graph_exception_handler(
     """
     if isinstance(exc, SemanticGraphError):
         status_code = _status_for_error(exc)
+        error_type = type(exc).__name__
+        # Sanitise security-sensitive error messages to avoid leaking
+        # internal filesystem paths to API consumers.  The full exception
+        # text is logged server-side below.
+        detail = _sanitise_detail(exc)
         logger.warning(
-            "Application error: %s (status=%d)", type(exc).__name__, status_code
+            "Application error: %s (status=%d) — %s",
+            error_type,
+            status_code,
+            exc,
         )
     else:
         status_code = HTTP_500_INTERNAL_SERVER_ERROR
+        # Do not leak internal exception details to API consumers.
+        # The full traceback is logged server-side for debugging.
+        detail = "Internal server error"
+        error_type = "InternalError"
         logger.exception("Unhandled exception: %s", exc)
 
     error = ErrorResponse(
-        detail=str(exc),
-        error_type=type(exc).__name__,
+        detail=detail,
+        error_type=error_type,
         status_code=status_code,
     )
     return JSONResponse(
         status_code=status_code,
         content=error.model_dump(),
     )
+
+
+def _sanitise_detail(exc: SemanticGraphError) -> str:
+    """Return a client-safe detail message for *exc*.
+
+    Security-sensitive error types (path traversal, path security) receive
+    generic messages so internal filesystem paths are never leaked to API
+    consumers.  The full exception text is always logged server-side.
+    """
+    from semantic_graph.utils.errors import PathSecurityError, PathTraversalError
+
+    if isinstance(exc, PathTraversalError):
+        return "Path traversal detected"
+    if isinstance(exc, PathSecurityError):
+        return "Invalid project path"
+    return str(exc)
 
 
 def _status_for_error(exc: SemanticGraphError) -> int:

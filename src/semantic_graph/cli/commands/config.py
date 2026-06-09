@@ -16,8 +16,6 @@ config_app = typer.Typer(
 )
 console = Console()
 
-CONFIG_FILE_HELP = "~/.semantic-graph/config.yaml"
-
 
 @config_app.command(name="show")
 def config_show() -> None:

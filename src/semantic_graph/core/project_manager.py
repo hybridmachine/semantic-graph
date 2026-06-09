@@ -36,8 +36,7 @@ class ProjectManager:
         Validates that the root path exists and is a safe directory,
         then persists the project record.
         """
-        root_path = Path(payload.root_path)
-        validate_project_root(root_path)
+        root_path = validate_project_root(Path(payload.root_path))
 
         with self._db.projects_session() as session:
             existing = self._project_repo.get_by_name(session, payload.name)
@@ -100,9 +99,11 @@ class ProjectManager:
         """Update project configuration fields."""
         update_data = payload.model_dump(exclude_unset=True)
 
-        # Validate root_path if provided.
+        # Validate root_path if provided, storing the canonical form.
         if "root_path" in update_data:
-            validate_project_root(Path(update_data["root_path"]))
+            update_data["root_path"] = str(
+                validate_project_root(Path(update_data["root_path"]))
+            )
 
         with self._db.projects_session() as session:
             proj = self._get_or_raise(session, project_id)

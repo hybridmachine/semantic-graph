@@ -20,6 +20,10 @@ class Settings(BaseSettings):
     api_host: str = Field(default="127.0.0.1")
     api_port: int = Field(default=8000)
     data_dir: Path = Field(default_factory=lambda: Path.home() / ".semantic-graph")
+    cors_origins: list[str] = Field(
+        default_factory=lambda: ["http://localhost:3000", "http://127.0.0.1:3000"],
+        description="Allowed CORS origins (NFR-24: defaults to localhost only)",
+    )
 
 
 settings = Settings()

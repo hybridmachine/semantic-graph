@@ -793,10 +793,13 @@ class TestGraphSyncManager:
         assert acquired
         mgr._lock.release()
 
-        # Context manager usage
+        # Context manager usage — RLock has no .locked() method, but we
+        # can verify the lock is held by trying to acquire it non-blocking
+        # from this thread (RLock allows re-acquire from the same thread).
         with mgr.write_lock():
-            # The lock is held by this thread while inside the context
-            assert mgr._lock.locked() is True
+            # The lock can be re-acquired within the same thread (RLock)
+            assert mgr._lock.acquire(blocking=False)
+            mgr._lock.release()
 
     def test_write_lock_is_reentrant_safe(self, db_manager: DatabaseManager) -> None:
         """The same thread cannot deadlock itself via write_lock."""

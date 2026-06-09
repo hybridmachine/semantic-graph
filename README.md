@@ -61,11 +61,47 @@ pytest --cov=semantic_graph --cov-report=term-missing
 
 ## Docker
 
+The recommended way to run Semantic Graph Manager in production is via Docker.
+The image includes graph-tool and runs as a non-root user.
+
 ```bash
-docker compose up
+# Build and start
+docker compose up -d
+
+# Check health
+curl http://localhost:8000/api/v1/health
+
+# View logs
+docker compose logs -f
+
+# Stop
+docker compose down
 ```
 
-> **Note**: The current Docker stub does **not** include graph-tool. Production graph-tool installation still needs to be added to the Dockerfile.
+### Data Persistence
+
+Project data is stored in a named Docker volume (`semantic_graph_data`).
+The volume is mounted at `/data` inside the container and persists across
+container restarts and rebuilds.
+
+### Configuration
+
+Pass configuration via environment variables in `docker-compose.yml` or a
+`.env` file:
+
+| Variable | Default | Description |
+|---|---|---|
+| `SEMANTIC_GRAPH_DEBUG` | `false` | Enable debug mode |
+| `SEMANTIC_GRAPH_API_HOST` | `0.0.0.0` | Server bind host (Docker default) |
+| `SEMANTIC_GRAPH_API_PORT` | `8000` | Server port |
+| `SEMANTIC_GRAPH_DATA_DIR` | `/data` | Data directory inside container |
+
+### Building from Source
+
+```bash
+docker build -t semantic-graph .
+docker run -p 8000:8000 -v semantic_graph_data:/data semantic-graph
+```
 
 ---
 

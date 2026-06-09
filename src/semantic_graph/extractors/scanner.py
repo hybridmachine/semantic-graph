@@ -132,9 +132,7 @@ class FileScanner:
         try:
             entries = sorted(current_dir.iterdir())
         except OSError as exc:
-            report.errors.append(
-                f"Failed to read directory {current_dir}: {exc}"
-            )
+            report.errors.append(f"Failed to read directory {current_dir}: {exc}")
             return
 
         for entry in entries:
@@ -217,9 +215,7 @@ class FileScanner:
                 continue
 
             # Check .gitignore for files.
-            if self.respect_gitignore and self._is_gitignored(
-                rel, gitignore_patterns
-            ):
+            if self.respect_gitignore and self._is_gitignored(rel, gitignore_patterns):
                 report.skipped.append(
                     FileScanResult(
                         relative_path=rel,
@@ -429,9 +425,7 @@ class FileScanner:
             modified_at=now,
             extractor_id=extractor_id if result.status == "included" else "skipped",
             extractor_version=extractor_version,
-            status=(
-                "pending" if result.status == "included" else result.status
-            ),
+            status=("pending" if result.status == "included" else result.status),
             skip_reason=result.skip_reason,
             last_processed_at=None,
         )

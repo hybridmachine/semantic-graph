@@ -34,9 +34,7 @@ def canonicalize_path(path: Path) -> Path:
     try:
         resolved = path.resolve(strict=False)
     except (OSError, RuntimeError) as exc:
-        raise PathSecurityError(
-            f"Failed to resolve path {path!s}: {exc}"
-        ) from exc
+        raise PathSecurityError(f"Failed to resolve path {path!s}: {exc}") from exc
     return resolved
 
 
@@ -126,8 +124,6 @@ def validate_project_root(root_path: Path) -> Path:
         "/var",
     }
     if canon.as_posix() in protected_paths or root_path.as_posix() in protected_paths:
-        raise PathSecurityError(
-            f"Project root cannot be a system directory: {canon}"
-        )
+        raise PathSecurityError(f"Project root cannot be a system directory: {canon}")
 
     return canon

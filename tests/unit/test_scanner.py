@@ -27,9 +27,7 @@ class TestBasicScan:
         assert isinstance(report, ScanReport)
         assert report.total_files == 0
 
-    def test_single_text_file(
-        self, tmp_path: Path, project_id: uuid.UUID
-    ) -> None:
+    def test_single_text_file(self, tmp_path: Path, project_id: uuid.UUID) -> None:
         (tmp_path / "readme.md").write_text("# Hello")
         report = FileScanner().scan(project_id, tmp_path)
         assert len(report.included) == 1
@@ -37,17 +35,13 @@ class TestBasicScan:
         assert report.included[0].status == "included"
         assert report.included[0].content_hash is not None
 
-    def test_multiple_files(
-        self, tmp_path: Path, project_id: uuid.UUID
-    ) -> None:
+    def test_multiple_files(self, tmp_path: Path, project_id: uuid.UUID) -> None:
         (tmp_path / "a.py").write_text("x=1")
         (tmp_path / "b.py").write_text("y=2")
         report = FileScanner().scan(project_id, tmp_path)
         assert len(report.included) == 2
 
-    def test_nested_directory(
-        self, tmp_path: Path, project_id: uuid.UUID
-    ) -> None:
+    def test_nested_directory(self, tmp_path: Path, project_id: uuid.UUID) -> None:
         sub = tmp_path / "sub"
         sub.mkdir()
         (sub / "nested.py").write_text("pass")
@@ -57,9 +51,7 @@ class TestBasicScan:
 
 
 class TestDefaultExcludes:
-    def test_git_directory_skipped(
-        self, tmp_path: Path, project_id: uuid.UUID
-    ) -> None:
+    def test_git_directory_skipped(self, tmp_path: Path, project_id: uuid.UUID) -> None:
         git_dir = tmp_path / ".git"
         git_dir.mkdir()
         (git_dir / "config").write_text("...")
@@ -67,26 +59,20 @@ class TestDefaultExcludes:
         assert len(report.included) == 0
         assert any(".git" in s.relative_path for s in report.skipped)
 
-    def test_node_modules_skipped(
-        self, tmp_path: Path, project_id: uuid.UUID
-    ) -> None:
+    def test_node_modules_skipped(self, tmp_path: Path, project_id: uuid.UUID) -> None:
         (tmp_path / "node_modules").mkdir()
         (tmp_path / "node_modules" / "pkg").mkdir()
         (tmp_path / "node_modules" / "pkg" / "index.js").write_text("// js")
         report = FileScanner().scan(project_id, tmp_path)
         assert len(report.included) == 0
 
-    def test_pycache_skipped(
-        self, tmp_path: Path, project_id: uuid.UUID
-    ) -> None:
+    def test_pycache_skipped(self, tmp_path: Path, project_id: uuid.UUID) -> None:
         (tmp_path / "__pycache__").mkdir()
         (tmp_path / "__pycache__" / "foo.pyc").write_bytes(b"\x00")
         report = FileScanner().scan(project_id, tmp_path)
         assert len(report.included) == 0
 
-    def test_venv_skipped(
-        self, tmp_path: Path, project_id: uuid.UUID
-    ) -> None:
+    def test_venv_skipped(self, tmp_path: Path, project_id: uuid.UUID) -> None:
         (tmp_path / ".venv").mkdir()
         (tmp_path / ".venv" / "bin").mkdir()
         (tmp_path / ".venv" / "bin" / "python").write_text("")
@@ -95,9 +81,7 @@ class TestDefaultExcludes:
 
 
 class TestGitignore:
-    def test_respects_gitignore(
-        self, tmp_path: Path, project_id: uuid.UUID
-    ) -> None:
+    def test_respects_gitignore(self, tmp_path: Path, project_id: uuid.UUID) -> None:
         (tmp_path / ".gitignore").write_text("*.log\n")
         (tmp_path / "app.py").write_text("pass")
         (tmp_path / "debug.log").write_text("log data")
@@ -106,9 +90,7 @@ class TestGitignore:
         assert "app.py" in included
         assert "debug.log" not in included
 
-    def test_gitignore_negation(
-        self, tmp_path: Path, project_id: uuid.UUID
-    ) -> None:
+    def test_gitignore_negation(self, tmp_path: Path, project_id: uuid.UUID) -> None:
         (tmp_path / ".gitignore").write_text("*.log\n!keep.log\n")
         (tmp_path / "debug.log").write_text("bad")
         (tmp_path / "keep.log").write_text("good")
@@ -117,9 +99,7 @@ class TestGitignore:
         assert "keep.log" in included
         assert "debug.log" not in included
 
-    def test_can_disable_gitignore(
-        self, tmp_path: Path, project_id: uuid.UUID
-    ) -> None:
+    def test_can_disable_gitignore(self, tmp_path: Path, project_id: uuid.UUID) -> None:
         (tmp_path / ".gitignore").write_text("*.log\n")
         (tmp_path / "debug.log").write_text("log data")
         scanner = FileScanner(respect_gitignore=False)
@@ -129,9 +109,7 @@ class TestGitignore:
 
 
 class TestIncludeExclude:
-    def test_include_patterns(
-        self, tmp_path: Path, project_id: uuid.UUID
-    ) -> None:
+    def test_include_patterns(self, tmp_path: Path, project_id: uuid.UUID) -> None:
         (tmp_path / "a.py").write_text("pass")
         (tmp_path / "b.txt").write_text("hi")
         scanner = FileScanner(include_patterns=["*.py"])
@@ -140,9 +118,7 @@ class TestIncludeExclude:
         assert "a.py" in included
         assert "b.txt" not in included
 
-    def test_exclude_patterns(
-        self, tmp_path: Path, project_id: uuid.UUID
-    ) -> None:
+    def test_exclude_patterns(self, tmp_path: Path, project_id: uuid.UUID) -> None:
         (tmp_path / "a.py").write_text("pass")
         (tmp_path / "test_a.py").write_text("pass")
         scanner = FileScanner(exclude_patterns=["test_*.py"])
@@ -153,17 +129,13 @@ class TestIncludeExclude:
 
 
 class TestBinaryDetection:
-    def test_binary_file_skipped(
-        self, tmp_path: Path, project_id: uuid.UUID
-    ) -> None:
+    def test_binary_file_skipped(self, tmp_path: Path, project_id: uuid.UUID) -> None:
         (tmp_path / "data.bin").write_bytes(b"\x00\x01\x02\x03")
         report = FileScanner().scan(project_id, tmp_path)
         assert len(report.included) == 0
         assert any("Binary" in (s.skip_reason or "") for s in report.skipped)
 
-    def test_text_file_included(
-        self, tmp_path: Path, project_id: uuid.UUID
-    ) -> None:
+    def test_text_file_included(self, tmp_path: Path, project_id: uuid.UUID) -> None:
         (tmp_path / "code.py").write_text("import os")
         report = FileScanner().scan(project_id, tmp_path)
         assert len(report.included) == 1
@@ -192,9 +164,7 @@ class TestSymlinks:
             scanner = FileScanner(follow_symlinks=True)
             report = scanner.scan(project_id, tmp_path)
             # The symlink should be skipped, not followed.
-            assert all(
-                "outside" not in (s.relative_path) for s in report.included
-            )
+            assert all("outside" not in (s.relative_path) for s in report.included)
         finally:
             outside.unlink(missing_ok=True)
 
@@ -209,9 +179,7 @@ class TestMaxFileSize:
         assert len(report.included) == 0
         assert any("exceeds max" in (s.skip_reason or "") for s in report.skipped)
 
-    def test_small_file_included(
-        self, tmp_path: Path, project_id: uuid.UUID
-    ) -> None:
+    def test_small_file_included(self, tmp_path: Path, project_id: uuid.UUID) -> None:
         (tmp_path / "small.txt").write_text("hi")
         scanner = FileScanner(max_file_size_bytes=1024)
         report = scanner.scan(project_id, tmp_path)

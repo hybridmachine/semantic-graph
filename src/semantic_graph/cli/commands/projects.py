@@ -25,9 +25,7 @@ _db = DatabaseManager(settings.data_dir)
 _manager = ProjectManager(_db)
 
 
-def _format_output(
-    data: object, fmt: str
-) -> None:
+def _format_output(data: object, fmt: str) -> None:
     """Render *data* in the requested format."""
     import json as _json
 
@@ -68,9 +66,7 @@ def create_project(
     llm_provider: str | None = typer.Option(
         None, "--llm-provider", help="LLM provider name"
     ),
-    llm_model: str | None = typer.Option(
-        None, "--llm-model", help="LLM model name"
-    ),
+    llm_model: str | None = typer.Option(None, "--llm-model", help="LLM model name"),
     format: str = typer.Option(
         "table", "--format", "-f", help="Output format: table, json"
     ),
@@ -161,9 +157,7 @@ def list_projects(
 @projects_app.command(name="delete")
 def delete_project(
     name_or_id: str = typer.Argument(..., help="Project name or UUID"),
-    force: bool = typer.Option(
-        False, "--force", "-y", help="Skip confirmation prompt"
-    ),
+    force: bool = typer.Option(False, "--force", "-y", help="Skip confirmation prompt"),
 ) -> None:
     """Delete a project and its graph data."""
     project_id = _resolve_project_id(name_or_id)
@@ -202,9 +196,7 @@ def configure_project(
     llm_provider: str | None = typer.Option(
         None, "--llm-provider", help="LLM provider name"
     ),
-    llm_model: str | None = typer.Option(
-        None, "--llm-model", help="LLM model name"
-    ),
+    llm_model: str | None = typer.Option(None, "--llm-model", help="LLM model name"),
     format: str = typer.Option(
         "table", "--format", "-f", help="Output format: table, json"
     ),

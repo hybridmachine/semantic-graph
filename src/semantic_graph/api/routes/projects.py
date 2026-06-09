@@ -145,9 +145,7 @@ async def delete_project(project_id: uuid.UUID) -> StatusResponse:
 
 
 @router.post("/{project_id}/scan", response_model=StatusResponse)
-async def trigger_scan(
-    project_id: uuid.UUID, payload: ScanTrigger
-) -> StatusResponse:
+async def trigger_scan(project_id: uuid.UUID, payload: ScanTrigger) -> StatusResponse:
     """Trigger a scan job for the project.
 
     This endpoint schedules a scan; actual processing is asynchronous.
@@ -190,10 +188,7 @@ async def list_project_files(
         total = len(all_entries)
         page = all_entries[offset : offset + limit]
 
-    items = [
-        FileManifestEntrySummary.model_validate(e)
-        for e in page
-    ]
+    items = [FileManifestEntrySummary.model_validate(e) for e in page]
     return FileManifestListResponse(
         items=items,
         total=total,

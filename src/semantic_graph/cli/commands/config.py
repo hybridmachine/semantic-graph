@@ -43,9 +43,7 @@ def config_set(
     """Set a configuration value (persisted to config file)."""
     # For now, direct the user to env vars; persistent config file
     # support can be added in a future iteration.
-    console.print(
-        "[yellow]Persistent config file not yet implemented.[/yellow]"
-    )
+    console.print("[yellow]Persistent config file not yet implemented.[/yellow]")
     console.print(
         f"To override [bold]{key}[/bold], set the environment variable "
         f"[bold]SEMANTIC_GRAPH_{key.upper()}[/bold]={value}"

@@ -50,9 +50,7 @@ class TestCreateProject:
         )
         assert resp.status_code == 422
 
-    def test_create_invalid_root(
-        self, client: TestClient, unique_name: str
-    ) -> None:
+    def test_create_invalid_root(self, client: TestClient, unique_name: str) -> None:
         resp = client.post(
             "/api/v1/projects",
             json={
@@ -99,17 +97,14 @@ class TestCreateProject:
 
 
 class TestListProjects:
-    def test_list_returns_array(
-        self, client: TestClient
-    ) -> None:
+    def test_list_returns_array(self, client: TestClient) -> None:
         resp = client.get("/api/v1/projects")
         assert resp.status_code == 200
         data = resp.json()
         assert isinstance(data["items"], list)
         assert "total" in data
 
-    def test_pagination_bounds(
-        self, client: TestClient) -> None:
+    def test_pagination_bounds(self, client: TestClient) -> None:
         resp = client.get("/api/v1/projects?offset=0&limit=1")
         assert resp.status_code == 200
         data = resp.json()
@@ -145,9 +140,7 @@ class TestUpdateProject:
         )
         pid = create.json()["id"]
         new_name = f"updated-{uuid.uuid4().hex[:8]}"
-        resp = client.put(
-            f"/api/v1/projects/{pid}", json={"name": new_name}
-        )
+        resp = client.put(f"/api/v1/projects/{pid}", json={"name": new_name})
         assert resp.status_code == 200
         assert resp.json()["name"] == new_name
 

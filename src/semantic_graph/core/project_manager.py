@@ -141,9 +141,7 @@ class ProjectManager:
     # Helpers
     # ------------------------------------------------------------------
 
-    def _get_or_raise(
-        self, session: object, project_id: uuid.UUID
-    ) -> Project:
+    def _get_or_raise(self, session: object, project_id: uuid.UUID) -> Project:
         """Return the project or raise.  *session* stays open for callers."""
         from sqlalchemy.orm import Session as OrmSession
 
